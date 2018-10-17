@@ -1,5 +1,5 @@
-from entity.Individual import Individual
 from ga.myga4train import myga4train
+from ga.myga4selection import myga4selection
 from entity import CONSTANT
 from queue import PriorityQueue
 import copy
@@ -49,7 +49,7 @@ class TradeHelper:
         seed_data = self.form_seed_data_4_selection(self.selection_groups[group_index - 1],
                                                     self.selection_groups[group_index],
                                                     best_individual_in_train)
-        ga = myga4train(seed_data,
+        ga = myga4selection(seed_data,
                         population_size=CONSTANT.NUM_OF_POPULATION,
                         generations=CONSTANT.NUM_OF_GENERATION,
                         crossover_probability=CONSTANT.PROB_CROSSOVER,
@@ -64,7 +64,11 @@ class TradeHelper:
         return 0
 
     def form_seed_data_4_train(self, list1, list2):
-        return []
+
+        pre_data = self.raw_data_ma_diffs.loc[list1[0]:list1[-1]]
+        cur_data = self.raw_data_ma_diffs.loc[list2[0]:list2[-1]]
+
+        return pre_data, cur_data
 
     def form_seed_data_4_selection(self, list1, list2, ori_indv):
         return []

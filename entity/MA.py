@@ -10,10 +10,10 @@ class MA:
         self.df = df
 
     @staticmethod
-    def get_m_n_combs():
+    def get_l_s_win_combs():
         combs = []
-        for m in CONSTANT.MA_M_VALUES:
-            for n in CONSTANT.MA_N_VALUES:
+        for m in CONSTANT.MA_LONG_WINDOW_SIZES:
+            for n in CONSTANT.MA_SHORT_WINDOW_SIZES:
                 if m > n:
                     combs.append((m, n))
         return combs
@@ -21,7 +21,7 @@ class MA:
     def get_df_with_ma_diffs(self, methods=CONSTANT.MA_METHODS, default_col=CONSTANT.MA_DEFAULT_COL):
         result_df = self.df.copy()
         drop_col = []
-        combs = MA.get_m_n_combs()
+        combs = MA.get_l_s_win_combs()
         for col in self.df.columns:
             drop_col.append(col)
         for comb in combs:

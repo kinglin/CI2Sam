@@ -1,6 +1,8 @@
 from pyeasyga import pyeasyga
+from entity.MA import MA
 import random
-from operator import attrgetter
+from entity.Rule import Rule
+from entity import CONSTANT
 
 
 class myga(pyeasyga.GeneticAlgorithm):
@@ -14,48 +16,36 @@ class myga(pyeasyga.GeneticAlgorithm):
                  elitism=True,
                  maximise_fitness=True):
 
-        self.seed_data = seed_data
-        self.population_size = population_size
-        self.generations = generations
-        self.crossover_probability = crossover_probability
-        self.mutation_probability = mutation_probability
-        self.elitism = elitism
-        self.maximise_fitness = maximise_fitness
+        pyeasyga.GeneticAlgorithm.__init__(self, seed_data,
+                        population_size=population_size,
+                        generations=generations,
+                        crossover_probability=crossover_probability,
+                        mutation_probability=mutation_probability,
+                        elitism=elitism,
+                        maximise_fitness=maximise_fitness)
 
-        self.current_generation = []
+        self.ma_combs = MA.get_l_s_win_combs()
 
-        def create_individual(seed_data):
-            return [random.randint(0, 1) for _ in range(len(seed_data))]
+        def my_create_individual(seed_data):
+            rules = []
+            for _ in range(self.population_size):
+                rule = Rule(random.choice(CONSTANT.MA_METHODS),
+                            random.choice(self.ma_combs),
+                            random.choice(CONSTANT.EXTENT),
+                            random.randint(-10, 10) / 10)
+                rules.append(rule)
 
-        def crossover(parent_1, parent_2):
-            index = random.randrange(1, len(parent_1))
-            child_1 = parent_1[:index] + parent_2[index:]
-            child_2 = parent_2[:index] + parent_1[index:]
-            return child_1, child_2
+            return rules
 
-        def mutate(individual):
+        def my_mutate(individual):
             mutate_index = random.randrange(len(individual))
             individual[mutate_index] = (0, 1)[individual[mutate_index] == 0]
 
-        def random_selection(population):
-            return random.choice(population)
-
-        def tournament_selection(population):
-            if self.tournament_size == 0:
-                self.tournament_size = 2
-            members = random.sample(population, self.tournament_size)
-            members.sort(
-                key=attrgetter('fitness'), reverse=self.maximise_fitness)
-            return members[0]
-
         self.fitness_function = None
-        self.tournament_selection = tournament_selection
-        self.tournament_size = self.population_size // 10
-        self.random_selection = random_selection
-        self.create_individual = create_individual
-        self.crossover_function = crossover
-        self.mutate_function = mutate
-        self.selection_function = self.tournament_selection
+        self.create_individual = my_create_individual
+        self.mutate_function = my_mutate
+
+
 
     def create_new_population(self):
 
