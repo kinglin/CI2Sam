@@ -21,11 +21,11 @@ class MF:
 
         count_per_group_A = math.floor(len(group_A) / len_extent_group_A)
         mod_A = len(group_A) % len_extent_group_A
-        count_per_group_A, mod_A
+        # count_per_group_A, mod_A
 
         count_per_group_B = math.floor(len(group_B) / len_extent_group_B)
         mod_B = len(group_B) % len_extent_group_B
-        count_per_group_B, mod_B
+        # count_per_group_B, mod_B
 
         extent_groups_A = []
         for i in range(0, len_extent_group_A):

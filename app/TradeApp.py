@@ -11,6 +11,7 @@ def main():
 
     raw_data = pd.read_csv(CONSTANT.RAW_DATA_PATH, index_col=0)
     raw_data.index = pd.to_datetime(raw_data.index)
+    raw_data = point_to_price(raw_data)
     raw_data_ma_diffs = MA(raw_data).get_df_with_ma_diffs()
 
     dh = DataHelper(raw_data_ma_diffs, group_div)
@@ -28,6 +29,9 @@ def main():
 
     print(total_profit)
 
+def point_to_price(raw_data):
+    # todo CONSTANT.INDEX_POINT_PRICE
+    return raw_data
 
 if __name__ == "__main__":
     main()

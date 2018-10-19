@@ -41,7 +41,6 @@ class TradeHelper:
                         mutation_probability=CONSTANT.PROB_MUTATE,
                         elitism=True,
                         maximise_fitness=True)
-        ga.fitness_function = self.fitness
         ga.run()
         return ga.best_individual()
 
@@ -56,7 +55,7 @@ class TradeHelper:
                         mutation_probability=CONSTANT.PROB_MUTATE,
                         elitism=True,
                         maximise_fitness=True)
-        ga.fitness_function = self.fitness
+
         ga.run()
         return ga.best_individual()
 
@@ -65,8 +64,8 @@ class TradeHelper:
 
     def form_seed_data_4_train(self, list1, list2):
 
-        pre_data = self.raw_data_ma_diffs.loc[list1[0]:list1[-1]]
-        cur_data = self.raw_data_ma_diffs.loc[list2[0]:list2[-1]]
+        pre_data = self.raw_data_ma_diffs.loc[list1[0]:list1[len(list1)]]
+        cur_data = self.raw_data_ma_diffs.loc[list2[0]:list2[len(list2)]]
 
         return pre_data, cur_data
 
@@ -75,9 +74,6 @@ class TradeHelper:
 
     def form_seed_data_4_test(self, list1, list2):
         return []
-
-    def fitness(self, individual, data):
-        return 0
 
     def get_best_indvs(self, pri_queue, num):
         i = 0

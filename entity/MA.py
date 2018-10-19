@@ -42,27 +42,6 @@ class MA:
             result_df = pd.concat([result_df, temp_df], axis=1)
         return result_df
 
-    def get_ma(self, df, ma_type, period):
-        # open_price = np.array(df['Open'], dtype=float)
-        high_price = np.array(df['High'], dtype=float)
-        low_price = np.array(df['Low'], dtype=float)
-        close_price = np.array(df['Close'], dtype=float)
-        # volume = np.array(df['Volume'], dtype=float)
-
-        # Simple Moving Average (SMA)
-        if ma_type == 'SMA':
-            return talib.SMA(close_price, timeperiod=period)
-        # Adaptive Moving Average (AMA)
-        elif ma_type == 'AMA':
-            return talib.KAMA(close_price, timeperiod=period)
-        # Typical Price Moving Average (TPMA)
-        elif ma_type == 'TPMA':
-            typical_price = talib.TYPPRICE(high_price, low_price, close_price)
-            return talib.SMA(typical_price, timeperiod=period)
-        # Triangular Moving Average (TMA)
-        elif ma_type == 'TMA':
-            return talib.TRIMA(close_price, timeperiod=period)
-
     def get_ma_set_diff(self, df, period, default_col):
         print(period)
         open_price = np.array(df['Open'], dtype=float)
