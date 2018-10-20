@@ -25,5 +25,11 @@ class CapFlow:
         ori_df.set_index('datetime')
         return ori_df
 
-    def insert(self):
+    def insert(self, tran=None, value=None):
+
+        if tran is None:
+            pass
+        else:
+            pass
+
         return dict()
