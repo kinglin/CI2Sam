@@ -104,3 +104,11 @@ elif index == 3:
     child_1.rating_value, child_2.rating_value = child_2.rating_value, child_1.rating_value
 
 cross_rules += [child_1, child_2]
+
+import pandas as pd
+from entity import CONSTANT
+df = pd.DataFrame({'datetime':['t1', 't2', 't3'], 'v1':[1,2,3], 'v2':[7,8,9]})
+writer = pd.ExcelWriter(CONSTANT.OUTPUT_PATH + 'test.xlsx')
+df.to_excel(writer, 'all_best_individuals')
+df.to_excel(writer, 'all_best_individuals1')
+writer.save()

@@ -2,11 +2,13 @@ from entity import CONSTANT
 from queue import PriorityQueue
 import copy
 from ga.myga import myga
-from ga.myga4test import myga4test
+from ga.myga4trade import myga4trade
+from ga.apply2test import apply2test
 from capflow.CapFlow import CapFlow
 from capflow.DymcShortList import DymcShortList
 from capflow.DymcShortList import ReturnBorrowLog
 from capflow.Trans import Trans
+from util.OutputUtil import OutputUtil
 
 
 class TradeHelper:
@@ -21,6 +23,7 @@ class TradeHelper:
     def get_best_individuals(self):
 
         best_indv_queue = PriorityQueue()
+        best_indv_list = list()
 
         cf = CapFlow(CapFlow.get_ori_df(self.test_groups[1][0]))
         trans = Trans(Trans.get_empty_df())
@@ -36,13 +39,67 @@ class TradeHelper:
                                                         cf=cf, trans=trans, dsl=dsl, rbl=rbl)
             best_indv_queue.put((-rate_of_return, copy.deepcopy(best_individual_in_selection)))
 
+            test_index_list = self.test_groups[group_index]
+            test_start = str(test_index_list[0])
+            test_end = str(test_index_list[len(test_index_list) - 1])
+            best_indv_list.append((test_start, test_end, rate_of_return, best_individual_in_selection, copy.deepcopy(cf.df[-1:])))
+            print('=====group index: {}====='.format(group_index))
+
         final_population = self.get_best_indvs(best_indv_queue, CONSTANT.NUM_OF_POPULATION)
+
+        OutputUtil.output_indv_list("{}_{}.xlsx".format('best_individuals_of_simulation', str(CONSTANT.TRANS_THRESHOLD))
+                                    , best_indv_list, final_population)
+        OutputUtil.output_process("{}_{}.xlsx".format('total_process_of_simulation', str(CONSTANT.TRANS_THRESHOLD))
+                                  , cf=cf, trans=trans, rbl=rbl)
 
         return final_population
 
     def get_total_test_profit(self, individuals):
         profit = 0
+        best_indv_queue = PriorityQueue()
+        best_indv_list = list()
+
+        cf = CapFlow(CapFlow.get_ori_df(self.test_groups[1][0]))
+        trans = Trans(Trans.get_empty_df())
+        dsl = DymcShortList(DymcShortList.get_empty_df())
+        rbl = ReturnBorrowLog(ReturnBorrowLog.get_empty_df())
+
+        # loop for each group(except the first one, because it doesn't have previous one)
+        for group_index in range(1, len(self.train_groups)):
+            best_individual_in_train = self.get_best_indv_in_train_trade(group_index, individuals)
+            best_individual_in_selection = self.get_best_indv_in_selection(group_index, best_individual_in_train)
+            rate_of_return = self.get_rreturn_from_test(group_index=group_index,
+                                                        indvidual=best_individual_in_selection,
+                                                        cf=cf, trans=trans, dsl=dsl, rbl=rbl)
+            best_indv_queue.put((-rate_of_return, copy.deepcopy(best_individual_in_selection)))
+
+            test_index_list = self.test_groups[group_index]
+            test_start = str(test_index_list[0])
+            test_end = str(test_index_list[len(test_index_list) - 1])
+            best_indv_list.append((test_start, test_end, rate_of_return, best_individual_in_selection, copy.deepcopy(cf.df[-1:])))
+
+        final_population = self.get_best_indvs(best_indv_queue, CONSTANT.NUM_OF_POPULATION)
+
+        OutputUtil.output_indv_list("{}_{}.xlsx".format('best_individuals_of_simulation', str(CONSTANT.TRANS_THRESHOLD))
+                                    , best_indv_list, final_population)
+        OutputUtil.output_process("{}_{}.xlsx".format('total_process_of_simulation', str(CONSTANT.TRANS_THRESHOLD))
+                                  , cf=cf, trans=trans, rbl=rbl)
+
+
         return profit
+
+    def get_best_indv_in_train_trade(self, group_index, individuals):
+        seed_data = self.form_seed_data_4_train_trade(self.train_groups[group_index - 1],
+                                                      self.train_groups[group_index], individuals)
+        ga = myga4trade(seed_data,
+                  population_size=CONSTANT.NUM_OF_POPULATION,
+                  generations=1,
+                  crossover_probability=CONSTANT.PROB_CROSSOVER,
+                  mutation_probability=CONSTANT.PROB_MUTATE,
+                  elitism=True,
+                  maximise_fitness=True)
+        ga.run()
+        return ga.best_individual()[1]
 
     def get_best_indv_in_train(self, group_index):
         seed_data = self.form_seed_data_4_train(self.train_groups[group_index - 1], self.train_groups[group_index])
@@ -75,7 +132,7 @@ class TradeHelper:
 
         index_list = self.test_groups[group_index]
         data = self.raw_data_ma_diffs.loc[str(index_list[0]):str(index_list[len(index_list) - 1])]
-        rreturn = myga4test(data, indvidual, cf, trans, dsl, rbl).fitness()
+        rreturn = apply2test(data, indvidual, cf, trans, dsl, rbl).fitness()
 
         return rreturn
 
@@ -92,6 +149,13 @@ class TradeHelper:
         cur_data = self.raw_data_ma_diffs.loc[str(list2[0]):str(list2[len(list2) - 1])]
 
         return pre_data, cur_data, ori_indv
+
+    def form_seed_data_4_train_trade(self, list1, list2, indvs):
+
+        pre_data = self.raw_data_ma_diffs.loc[str(list1[0]):str(list1[len(list1) - 1])]
+        cur_data = self.raw_data_ma_diffs.loc[str(list2[0]):str(list2[len(list2) - 1])]
+
+        return pre_data, cur_data, indvs
 
     def get_best_indvs(self, pri_queue, num):
         i = 0

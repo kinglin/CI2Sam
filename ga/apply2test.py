@@ -2,7 +2,7 @@ from entity import CONSTANT
 from tqdm import tqdm
 
 
-class myga4test():
+class apply2test():
 
     def __init__(self, data, individual, cf, trans, dsl, rbl):
         self.data = data
@@ -46,6 +46,6 @@ class myga4test():
             rreturn_t = self.get_rreturn(rlevel, datetime, row, self.cf, self.trans, self.dsl, self.rbl)
             rreturn += rreturn_t
 
-        rreturn /= self.data[1].shape[0]
+        rreturn /= self.data.shape[0]
         print(rreturn)
         return rreturn
