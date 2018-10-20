@@ -1,5 +1,11 @@
+from datetime import date
+
 # file path
 RAW_DATA_PATH = '/Users/lince/Desktop/NUS/03_CA/CA_11_CI2/raw_data/interpolate_mod_trading.csv'
+
+# group split
+TRADE_DATE = date(2014, 1, 2)
+DIV_30 = 1 # 30
 
 # MA related
 MA_METHODS = ['sma', 'ama', 'tma', 'tpma']
@@ -23,8 +29,8 @@ PROB_CROSSOVER = 0.7
 PROB_MUTATE = 1
 PROB_MUTATE_CROSSOVER = 0.5
 PROB_MUTATE_MUTATE = 0.5
-POPULATION_BEST_PORTION = 0.1
-POPULATION_REMAIN_PORTION = 0.8
+POPULATION_BEST_PORTION = 0.5
+POPULATION_REMAIN_PORTION = 0.3
 
 # Capital related
 ORI_CAP_VALUE = 10000000

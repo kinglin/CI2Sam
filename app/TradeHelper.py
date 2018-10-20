@@ -1,8 +1,12 @@
-from ga.myga4train import myga4train
-from ga.myga4selection import myga4selection
 from entity import CONSTANT
 from queue import PriorityQueue
 import copy
+from ga.myga import myga
+from ga.myga4test import myga4test
+from capflow.CapFlow import CapFlow
+from capflow.DymcShortList import DymcShortList
+from capflow.DymcShortList import ReturnBorrowLog
+from capflow.Trans import Trans
 
 
 class TradeHelper:
@@ -18,11 +22,18 @@ class TradeHelper:
 
         best_indv_queue = PriorityQueue()
 
+        cf = CapFlow(CapFlow.get_ori_df(self.test_groups[1][0]))
+        trans = Trans(Trans.get_empty_df())
+        dsl = DymcShortList(DymcShortList.get_empty_df())
+        rbl = ReturnBorrowLog(ReturnBorrowLog.get_empty_df())
+
         # loop for each group(except the first one, because it doesn't have previous one)
         for group_index in range(1, len(self.train_groups)):
             best_individual_in_train = self.get_best_indv_in_train(group_index)
             best_individual_in_selection = self.get_best_indv_in_selection(group_index, best_individual_in_train)
-            rate_of_return = self.get_rreturn_from_test(best_individual_in_selection)
+            rate_of_return = self.get_rreturn_from_test(group_index=group_index,
+                                                        indvidual=best_individual_in_selection,
+                                                        cf=cf, trans=trans, dsl=dsl, rbl=rbl)
             best_indv_queue.put((-rate_of_return, copy.deepcopy(best_individual_in_selection)))
 
         final_population = self.get_best_indvs(best_indv_queue, CONSTANT.NUM_OF_POPULATION)
@@ -35,13 +46,13 @@ class TradeHelper:
 
     def get_best_indv_in_train(self, group_index):
         seed_data = self.form_seed_data_4_train(self.train_groups[group_index - 1], self.train_groups[group_index])
-        ga = myga4train(seed_data,
-                        population_size=CONSTANT.NUM_OF_POPULATION,
-                        generations=1,
-                        crossover_probability=CONSTANT.PROB_CROSSOVER,
-                        mutation_probability=CONSTANT.PROB_MUTATE,
-                        elitism=True,
-                        maximise_fitness=True)
+        ga = myga(seed_data,
+                    population_size=CONSTANT.NUM_OF_POPULATION,
+                    generations=1,
+                    crossover_probability=CONSTANT.PROB_CROSSOVER,
+                    mutation_probability=CONSTANT.PROB_MUTATE,
+                    elitism=True,
+                    maximise_fitness=True)
         ga.run()
         return ga.best_individual()[1]
 
@@ -49,19 +60,24 @@ class TradeHelper:
         seed_data = self.form_seed_data_4_selection(self.selection_groups[group_index - 1],
                                                     self.selection_groups[group_index],
                                                     best_individual_in_train)
-        ga = myga4selection(seed_data,
-                            population_size=CONSTANT.NUM_OF_POPULATION,
-                            generations=CONSTANT.NUM_OF_GENERATION,
-                            crossover_probability=CONSTANT.PROB_CROSSOVER,
-                            mutation_probability=CONSTANT.PROB_MUTATE,
-                            elitism=True,
-                            maximise_fitness=True)
+        ga = myga(seed_data,
+                        population_size=CONSTANT.NUM_OF_POPULATION,
+                        generations=CONSTANT.NUM_OF_GENERATION,
+                        crossover_probability=CONSTANT.PROB_CROSSOVER,
+                        mutation_probability=CONSTANT.PROB_MUTATE,
+                        elitism=True,
+                        maximise_fitness=True)
 
         ga.run()
         return ga.best_individual()[1]
 
-    def get_rreturn_from_test(self, indv):
-        return 0
+    def get_rreturn_from_test(self, group_index, indvidual, cf, trans, dsl, rbl):
+
+        index_list = self.test_groups[group_index]
+        data = self.raw_data_ma_diffs.loc[str(index_list[0]):str(index_list[len(index_list) - 1])]
+        rreturn = myga4test(data, indvidual, cf, trans, dsl, rbl).fitness()
+
+        return rreturn
 
     def form_seed_data_4_train(self, list1, list2):
 
@@ -76,9 +92,6 @@ class TradeHelper:
         cur_data = self.raw_data_ma_diffs.loc[str(list2[0]):str(list2[len(list2) - 1])]
 
         return pre_data, cur_data, ori_indv
-
-    def form_seed_data_4_test(self, list1, list2):
-        return []
 
     def get_best_indvs(self, pri_queue, num):
         i = 0

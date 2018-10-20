@@ -1,14 +1,9 @@
-from datetime import date
+from entity import CONSTANT
 
 
 class DataHelper:
     # UNIT_MINUTE = "minute"
     # GROUP_15 = 15
-    # todo
-    # TRADE_DATE = date(2014, 1, 2)
-    # DIV_30 = 30
-    TRADE_DATE = date(2014, 1, 2)
-    DIV_30 = 5
 
     # RATIO = 6
     # DAYS_PER_DIV = 120  # 1 quarter per division
@@ -90,20 +85,20 @@ class DataHelper:
         # deal with self.data and return a list
         # every element is a dataframe
 
-        B_days = len(set(self.data.loc[str(self.TRADE_DATE):].index.date))
+        B_days = len(set(self.data.loc[str(CONSTANT.TRADE_DATE):].index.date))
         B_divs = round(B_days / self.days_per_div)
 
-        target = self.TRADE_DATE
+        target = CONSTANT.TRADE_DATE
         temp_divB_groups = []
 
         for i in range(0, B_divs):
             temp_divB_groups.append(self.find_containing_dates(self.unique_dates, target, self.days_per_div))
             target = self.find_next_date(self.unique_dates, temp_divB_groups[-1][-1])
 
-        A_days = len(set(self.data.loc[:str(self.find_yesterday_date(self.unique_dates, self.TRADE_DATE))].index.date))
+        A_days = len(set(self.data.loc[:str(self.find_yesterday_date(self.unique_dates, CONSTANT.TRADE_DATE))].index.date))
         A_divs = round(A_days / self.days_per_div)
 
-        target = self.TRADE_DATE
+        target = CONSTANT.TRADE_DATE
         temp_divA_groups = []
         for i in range(0, A_divs):
             temp_divA_groups.append(self.find_previous_dates(self.unique_dates, target, self.days_per_div))

@@ -8,14 +8,12 @@ import warnings
 
 def main():
 
-    group_div = DataHelper.DIV_30
-
     raw_data = pd.read_csv(CONSTANT.RAW_DATA_PATH, index_col=0)
     raw_data.index = pd.to_datetime(raw_data.index)
     raw_data = price_to_value(raw_data)
     raw_data_ma_diffs = MA(raw_data).get_df_with_ma_diffs()
 
-    dh = DataHelper(raw_data_ma_diffs, group_div)
+    dh = DataHelper(raw_data_ma_diffs, CONSTANT.DIV_30)
     train_groups, selection_groups, test_groups, trade_index = dh.get_data_groups()
 
     th_pure_train = TradeHelper(raw_data_ma_diffs, train_groups[0:trade_index],
