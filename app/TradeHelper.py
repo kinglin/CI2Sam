@@ -4,6 +4,7 @@ from entity import CONSTANT
 from queue import PriorityQueue
 import copy
 
+
 class TradeHelper:
 
     def __init__(self, raw_data_ma_diffs, train_groups, selection_groups, test_groups):
@@ -28,7 +29,7 @@ class TradeHelper:
 
         return final_population
 
-    def get_total_test_profit(self, individual):
+    def get_total_test_profit(self, individuals):
         profit = 0
         return profit
 
@@ -42,35 +43,39 @@ class TradeHelper:
                         elitism=True,
                         maximise_fitness=True)
         ga.run()
-        return ga.best_individual()
+        return ga.best_individual()[1]
 
     def get_best_indv_in_selection(self, group_index, best_individual_in_train):
         seed_data = self.form_seed_data_4_selection(self.selection_groups[group_index - 1],
                                                     self.selection_groups[group_index],
                                                     best_individual_in_train)
         ga = myga4selection(seed_data,
-                        population_size=CONSTANT.NUM_OF_POPULATION,
-                        generations=CONSTANT.NUM_OF_GENERATION,
-                        crossover_probability=CONSTANT.PROB_CROSSOVER,
-                        mutation_probability=CONSTANT.PROB_MUTATE,
-                        elitism=True,
-                        maximise_fitness=True)
+                            population_size=CONSTANT.NUM_OF_POPULATION,
+                            generations=CONSTANT.NUM_OF_GENERATION,
+                            crossover_probability=CONSTANT.PROB_CROSSOVER,
+                            mutation_probability=CONSTANT.PROB_MUTATE,
+                            elitism=True,
+                            maximise_fitness=True)
 
         ga.run()
-        return ga.best_individual()
+        return ga.best_individual()[1]
 
     def get_rreturn_from_test(self, indv):
         return 0
 
     def form_seed_data_4_train(self, list1, list2):
 
-        pre_data = self.raw_data_ma_diffs.loc[list1[0]:list1[len(list1)]]
-        cur_data = self.raw_data_ma_diffs.loc[list2[0]:list2[len(list2)]]
+        pre_data = self.raw_data_ma_diffs.loc[str(list1[0]):str(list1[len(list1) - 1])]
+        cur_data = self.raw_data_ma_diffs.loc[str(list2[0]):str(list2[len(list2) - 1])]
 
         return pre_data, cur_data
 
     def form_seed_data_4_selection(self, list1, list2, ori_indv):
-        return []
+
+        pre_data = self.raw_data_ma_diffs.loc[str(list1[0]):str(list1[len(list1) - 1])]
+        cur_data = self.raw_data_ma_diffs.loc[str(list2[0]):str(list2[len(list2) - 1])]
+
+        return pre_data, cur_data, ori_indv
 
     def form_seed_data_4_test(self, list1, list2):
         return []

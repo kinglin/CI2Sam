@@ -4,8 +4,11 @@ from datetime import date
 class DataHelper:
     # UNIT_MINUTE = "minute"
     # GROUP_15 = 15
+    # todo
+    # TRADE_DATE = date(2014, 1, 2)
+    # DIV_30 = 30
     TRADE_DATE = date(2014, 1, 2)
-    DIV_30 = 30
+    DIV_30 = 5
 
     # RATIO = 6
     # DAYS_PER_DIV = 120  # 1 quarter per division

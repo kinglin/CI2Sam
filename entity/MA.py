@@ -43,11 +43,11 @@ class MA:
         return result_df
 
     def get_ma_set_diff(self, df, period, default_col):
-        print(period)
-        open_price = np.array(df['Open'], dtype=float)
-        high_price = np.array(df['High'], dtype=float)
-        low_price = np.array(df['Low'], dtype=float)
-        close_price = np.array(df['Close'], dtype=float)
+        # print(period)
+        open_price = np.array(df['open'], dtype=float)
+        high_price = np.array(df['high'], dtype=float)
+        low_price = np.array(df['low'], dtype=float)
+        close_price = np.array(df['close'], dtype=float)
         # volume = np.array(df['Volume'], dtype=float)
 
         target = close_price

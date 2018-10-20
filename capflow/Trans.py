@@ -22,16 +22,16 @@ class Trans:
         cost_borrow = abs(min(volume_s,0)) * low * CONSTANT.BORROW_INTEREST_FEE
         realized_profit = -low * (cur_holding - pre_holding)
 
-        tran = {'datetime': datetime,
-                'pre': pre_holding,
-                'cur': cur_holding,
-                'type': trans_type,
-                'volume_l': volume_l,
-                'volume_s': volume_s,
-                'cost_once': cost_once,
-                'cost_borrow': cost_borrow,
-                'short_price': low,
-                'realized_profit': realized_profit}
+        tran = {'datetime': [datetime],
+                'pre': [pre_holding],
+                'cur': [cur_holding],
+                'type': [trans_type],
+                'volume_l': [volume_l],
+                'volume_s': [volume_s],
+                'cost_once': [cost_once],
+                'cost_borrow': [cost_borrow],
+                'short_price': [0] if volume_s == 0 else [low],
+                'realized_profit': [realized_profit]}
         tran_df = pd.DataFrame.from_dict(tran)
-        self.df.append(tran_df, ignore_index=True)
+        self.df = self.df.append(tran_df, ignore_index=True)
         return tran

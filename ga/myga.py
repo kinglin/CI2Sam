@@ -3,6 +3,7 @@ from entity.MA import MA
 import random
 from entity.Rule import Rule
 from entity import CONSTANT
+import copy
 
 
 class myga(pyeasyga.GeneticAlgorithm):
@@ -28,7 +29,7 @@ class myga(pyeasyga.GeneticAlgorithm):
 
         def my_create_individual(seed_data):
             rules = []
-            for _ in range(self.population_size):
+            for _ in range(CONSTANT.NUM_OF_RULES_PER_INDV):
                 rule = Rule(random.choice(CONSTANT.MA_METHODS),
                             random.choice(self.ma_combs),
                             random.choice(CONSTANT.EXTENT),
@@ -79,4 +80,37 @@ class myga(pyeasyga.GeneticAlgorithm):
 
     def create_new_population(self):
 
-        pass
+        new_population = []
+        for i in range(int(CONSTANT.POPULATION_BEST_PORTION * self.population_size)):
+            elite = copy.deepcopy(self.current_generation[i])
+            new_population.append(elite)
+
+        selection = self.selection_function
+
+        while len(new_population) < int(self.population_size * (CONSTANT.POPULATION_BEST_PORTION + CONSTANT.POPULATION_REMAIN_PORTION)):
+            parent_1 = copy.deepcopy(selection(self.current_generation))
+            parent_2 = copy.deepcopy(selection(self.current_generation))
+
+            child_1, child_2 = parent_1, parent_2
+            child_1.fitness, child_2.fitness = 0, 0
+
+            can_crossover = random.random() < self.crossover_probability
+            can_mutate = random.random() < self.mutation_probability
+
+            if can_crossover:
+                child_1.genes, child_2.genes = self.crossover_function(
+                    parent_1.genes, parent_2.genes)
+
+            if can_mutate:
+                self.mutate_function(child_1.genes)
+                self.mutate_function(child_2.genes)
+
+            new_population.append(child_1)
+            if len(new_population) < self.population_size:
+                new_population.append(child_2)
+
+        remain_num = self.population_size - len(new_population)
+        for i in range(remain_num):
+            new_population.append(self.create_individual(0))
+
+        self.current_generation = new_population

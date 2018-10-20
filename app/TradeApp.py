@@ -3,6 +3,7 @@ from app.DataHelper import DataHelper
 from app.TradeHelper import TradeHelper
 from entity.MA import MA
 from entity import CONSTANT
+import warnings
 
 
 def main():
@@ -11,7 +12,7 @@ def main():
 
     raw_data = pd.read_csv(CONSTANT.RAW_DATA_PATH, index_col=0)
     raw_data.index = pd.to_datetime(raw_data.index)
-    raw_data = point_to_price(raw_data)
+    raw_data = price_to_value(raw_data)
     raw_data_ma_diffs = MA(raw_data).get_df_with_ma_diffs()
 
     dh = DataHelper(raw_data_ma_diffs, group_div)
@@ -29,9 +30,15 @@ def main():
 
     print(total_profit)
 
-def point_to_price(raw_data):
-    # todo CONSTANT.INDEX_POINT_PRICE
+
+def price_to_value(raw_data):
+
+    cols = raw_data.columns.values
+    for col in cols:
+        if col is not 'datetime':
+            raw_data[col] = raw_data[col] * CONSTANT.VALUE_PER_PRICE
     return raw_data
 
 if __name__ == "__main__":
+    warnings.filterwarnings('ignore')
     main()
