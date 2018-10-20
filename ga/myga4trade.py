@@ -29,4 +29,9 @@ class myga4trade(myga):
         for indv in indvs:
             initial_population.append(pyeasyga.Chromosome(indv))
 
+        while len(initial_population) < self.population_size:
+            genes = self.create_individual(self.seed_data)
+            individual = pyeasyga.Chromosome(genes)
+            initial_population.append(individual)
+
         self.current_generation = initial_population

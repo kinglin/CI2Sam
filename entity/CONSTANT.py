@@ -6,7 +6,7 @@ OUTPUT_PATH = '/Users/lince/Desktop/NUS/03_CA/CA_11_CI2/output/'
 
 # group split
 TRADE_DATE = date(2014, 1, 2)
-DIV_30 = 30 # 30
+DIV_30 = 50 # 30
 
 # MA related
 MA_METHODS = ['sma', 'ama', 'tma', 'tpma']# ['sma', 'ama', 'tma', 'tpma']
@@ -30,8 +30,8 @@ PROB_CROSSOVER = 0.7
 PROB_MUTATE = 1
 PROB_MUTATE_CROSSOVER = 0.5
 PROB_MUTATE_MUTATE = 0.5
-POPULATION_BEST_PORTION = 0.5
-POPULATION_REMAIN_PORTION = 0.3
+POPULATION_BEST_PORTION = 0.2
+POPULATION_REMAIN_PORTION = 0.6
 
 # Capital related
 ORI_CAP_VALUE = 10000000
