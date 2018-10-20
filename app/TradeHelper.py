@@ -32,6 +32,7 @@ class TradeHelper:
 
         # loop for each group(except the first one, because it doesn't have previous one)
         for group_index in range(1, len(self.train_groups)):
+            print('=====group index: {}/{}====='.format(group_index, len(self.train_groups)))
             best_individual_in_train = self.get_best_indv_in_train(group_index)
             best_individual_in_selection = self.get_best_indv_in_selection(group_index, best_individual_in_train)
             rate_of_return = self.get_rreturn_from_test(group_index=group_index,
@@ -43,7 +44,6 @@ class TradeHelper:
             test_start = str(test_index_list[0])
             test_end = str(test_index_list[len(test_index_list) - 1])
             best_indv_list.append((test_start, test_end, rate_of_return, best_individual_in_selection, copy.deepcopy(cf.df[-1:])))
-            print('=====group index: {}====='.format(group_index))
 
         final_population = self.get_best_indvs(best_indv_queue, CONSTANT.NUM_OF_POPULATION)
 
@@ -55,9 +55,11 @@ class TradeHelper:
         return final_population
 
     def get_total_test_profit(self, individuals):
-        profit = 0
+
         best_indv_queue = PriorityQueue()
         best_indv_list = list()
+
+        print(len(self.train_groups))
 
         cf = CapFlow(CapFlow.get_ori_df(self.test_groups[1][0]))
         trans = Trans(Trans.get_empty_df())
@@ -66,6 +68,7 @@ class TradeHelper:
 
         # loop for each group(except the first one, because it doesn't have previous one)
         for group_index in range(1, len(self.train_groups)):
+            print('=====group index: {}/{}====='.format(group_index, len(self.train_groups)))
             best_individual_in_train = self.get_best_indv_in_train_trade(group_index, individuals)
             best_individual_in_selection = self.get_best_indv_in_selection(group_index, best_individual_in_train)
             rate_of_return = self.get_rreturn_from_test(group_index=group_index,
@@ -80,13 +83,12 @@ class TradeHelper:
 
         final_population = self.get_best_indvs(best_indv_queue, CONSTANT.NUM_OF_POPULATION)
 
-        OutputUtil.output_indv_list("{}_{}.xlsx".format('best_individuals_of_simulation', str(CONSTANT.TRANS_THRESHOLD))
+        OutputUtil.output_indv_list("{}_{}.xlsx".format('best_individuals', str(CONSTANT.TRANS_THRESHOLD))
                                     , best_indv_list, final_population)
-        OutputUtil.output_process("{}_{}.xlsx".format('total_process_of_simulation', str(CONSTANT.TRANS_THRESHOLD))
+        OutputUtil.output_process("{}_{}.xlsx".format('total_process', str(CONSTANT.TRANS_THRESHOLD))
                                   , cf=cf, trans=trans, rbl=rbl)
 
-
-        return profit
+        return cf.df[-1:]
 
     def get_best_indv_in_train_trade(self, group_index, individuals):
         seed_data = self.form_seed_data_4_train_trade(self.train_groups[group_index - 1],

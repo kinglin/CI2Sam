@@ -112,3 +112,11 @@ writer = pd.ExcelWriter(CONSTANT.OUTPUT_PATH + 'test.xlsx')
 df.to_excel(writer, 'all_best_individuals')
 df.to_excel(writer, 'all_best_individuals1')
 writer.save()
+
+import pandas as pd
+df = pd.DataFrame()
+tran = {'datetime': ['1'],'pre': [2],'cur': [3]}
+tran_df = pd.DataFrame.from_dict(tran)
+tran_df
+df = df.append(tran_df, ignore_index=True)
+df
