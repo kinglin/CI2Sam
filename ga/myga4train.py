@@ -42,9 +42,9 @@ class myga4train(myga):
                 elif tran['volume_s'] > 0:
                     ds_up_dict = dsl.update(tran)
                     rbl.insert(datetime=row['datetime'], up_dict=ds_up_dict)
-                rreturn = cf.insert(tran=tran, value=row['low'])
+                rreturn = cf.insert(row=row, dsl=dsl, tran=tran)
             else:
-                rreturn = cf.insert(value=row['low'])
+                rreturn = cf.insert(row=row, dsl=dsl)
 
             return rreturn
 
@@ -100,6 +100,12 @@ df
 
 df = df[df['size']>0]
 df
+
+total = df['size'].apply(lambda x: x.sum(), axis=0)
+total
+
+number = df['size'].sum()
+number
 
 for _, row in df.iterrows():
     rvalue = row['col2']
