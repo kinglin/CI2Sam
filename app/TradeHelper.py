@@ -9,6 +9,8 @@ from capflow.DymcShortList import DymcShortList
 from capflow.DymcShortList import ReturnBorrowLog
 from capflow.Trans import Trans
 from util.OutputUtil import OutputUtil
+import time
+from tqdm import tqdm
 
 
 class TradeHelper:
@@ -32,18 +34,24 @@ class TradeHelper:
 
         # loop for each group(except the first one, because it doesn't have previous one)
         for group_index in range(1, len(self.train_groups)):
+            start_time = time.time()
             print('=====group index: {}/{}====='.format(group_index, len(self.train_groups)))
             best_individual_in_train = self.get_best_indv_in_train(group_index)
+            # print('==train end==')
             best_individual_in_selection = self.get_best_indv_in_selection(group_index, best_individual_in_train)
+            # print('==selection end==')
             rate_of_return = self.get_rreturn_from_test(group_index=group_index,
                                                         indvidual=best_individual_in_selection,
                                                         cf=cf, trans=trans, dsl=dsl, rbl=rbl)
+            # print('==test end==')
             best_indv_queue.put((-rate_of_return, copy.deepcopy(best_individual_in_selection)))
 
             test_index_list = self.test_groups[group_index]
             test_start = str(test_index_list[0])
             test_end = str(test_index_list[len(test_index_list) - 1])
             best_indv_list.append((test_start, test_end, rate_of_return, best_individual_in_selection, copy.deepcopy(cf.df[-1:])))
+            end_time = time.time()
+            print('=====group index: {}/{}  {}s  {}====='.format(group_index, len(self.train_groups), end_time - start_time, rate_of_return))
 
         final_population = self.get_best_indvs(best_indv_queue, CONSTANT.NUM_OF_POPULATION)
 
@@ -68,18 +76,24 @@ class TradeHelper:
 
         # loop for each group(except the first one, because it doesn't have previous one)
         for group_index in range(1, len(self.train_groups)):
+            start_time = time.time()
             print('=====group index: {}/{}====='.format(group_index, len(self.train_groups)))
             best_individual_in_train = self.get_best_indv_in_train_trade(group_index, individuals)
+            # print('==train end==')
             best_individual_in_selection = self.get_best_indv_in_selection(group_index, best_individual_in_train)
+            # print('==selection end==')
             rate_of_return = self.get_rreturn_from_test(group_index=group_index,
                                                         indvidual=best_individual_in_selection,
                                                         cf=cf, trans=trans, dsl=dsl, rbl=rbl)
+            # print('==test end==')
             best_indv_queue.put((-rate_of_return, copy.deepcopy(best_individual_in_selection)))
 
             test_index_list = self.test_groups[group_index]
             test_start = str(test_index_list[0])
             test_end = str(test_index_list[len(test_index_list) - 1])
             best_indv_list.append((test_start, test_end, rate_of_return, best_individual_in_selection, copy.deepcopy(cf.df[-1:])))
+            end_time = time.time()
+            print('=====group index: {}/{}  {}s  {}====='.format(group_index, len(self.train_groups), end_time - start_time, rate_of_return))
 
         final_population = self.get_best_indvs(best_indv_queue, CONSTANT.NUM_OF_POPULATION)
 

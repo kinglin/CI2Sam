@@ -9,7 +9,7 @@ from capflow.DymcShortList import DymcShortList
 from capflow.Trans import Trans
 from capflow.DymcShortList import ReturnBorrowLog
 from entity import CONSTANT
-from tqdm import tqdm
+# from tqdm import tqdm
 
 
 class myga(pyeasyga.GeneticAlgorithm):
@@ -118,7 +118,8 @@ class myga(pyeasyga.GeneticAlgorithm):
             dsl = DymcShortList(DymcShortList.get_empty_df())
             rbl = ReturnBorrowLog(ReturnBorrowLog.get_empty_df())
 
-            for datetime, row in tqdm(data[1].iterrows()):
+            # for datetime, row in tqdm(data[1].iterrows()):
+            for datetime, row in data[1].iterrows():
                 rlevel = 0
                 act = 0
                 for rule in individual:
@@ -133,7 +134,6 @@ class myga(pyeasyga.GeneticAlgorithm):
                 rreturn += rreturn_t
 
             rreturn /= data[1].shape[0]
-            print(rreturn)
             return rreturn
 
         self.fitness_function = fitness
@@ -173,7 +173,7 @@ class myga(pyeasyga.GeneticAlgorithm):
 
         remain_num = self.population_size - len(new_population)
         for i in range(remain_num):
-            new_population.append(self.create_individual(0))
+            new_population.append(pyeasyga.Chromosome(self.create_individual(0)))
 
         self.current_generation = new_population
 

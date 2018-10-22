@@ -1,5 +1,4 @@
 from entity import CONSTANT
-from tqdm import tqdm
 
 
 class apply2test():
@@ -32,7 +31,7 @@ class apply2test():
     def fitness(self):
         rreturn = 0
 
-        for datetime, row in tqdm(self.data.iterrows()):
+        for datetime, row in self.data.iterrows():
             rlevel = 0
             act = 0
             for rule in self.individual:
@@ -47,5 +46,4 @@ class apply2test():
             rreturn += rreturn_t
 
         rreturn /= self.data.shape[0]
-        print(rreturn)
         return rreturn

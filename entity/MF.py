@@ -2,7 +2,6 @@ import math
 import numpy as np
 import scipy.stats as stats
 
-
 class MF:
     EXTENT_GROUPS = 7
 
@@ -28,26 +27,28 @@ class MF:
         # count_per_group_B, mod_B
 
         extent_groups_A = []
-        for i in range(0, len_extent_group_A):
-            if i <= mod_A - 1:
-                extent_groups_A.append(group_A[:count_per_group_A + 1])
-                group_A = group_A.drop(group_A.index[:count_per_group_A + 1])
-                group_A.reset_index(inplace=True, drop=True)
-            else:
-                extent_groups_A.append(group_A[:count_per_group_A])
-                group_A = group_A.drop(group_A.index[:count_per_group_A])
-                group_A.reset_index(inplace=True, drop=True)
+        if count_per_group_A != 0:
+            for i in range(0, len_extent_group_A):
+                if i <= mod_A - 1:
+                    extent_groups_A.append(group_A[:count_per_group_A + 1])
+                    group_A = group_A.drop(group_A.index[:count_per_group_A + 1])
+                    group_A.reset_index(inplace=True, drop=True)
+                else:
+                    extent_groups_A.append(group_A[:count_per_group_A])
+                    group_A = group_A.drop(group_A.index[:count_per_group_A])
+                    group_A.reset_index(inplace=True, drop=True)
 
         extent_groups_B = []
-        for i in range(0, len_extent_group_B):
-            if i <= mod_B - 1:
-                extent_groups_B.append(group_B[:count_per_group_B + 1])
-                group_B = group_B.drop(group_B.index[:count_per_group_B + 1])
-                group_B.reset_index(inplace=True, drop=True)
-            else:
-                extent_groups_B.append(group_B[:count_per_group_B])
-                group_B = group_B.drop(group_B.index[:count_per_group_B])
-                group_B.reset_index(inplace=True, drop=True)
+        if count_per_group_B != 0:
+            for i in range(0, len_extent_group_B):
+                if i <= mod_B - 1:
+                    extent_groups_B.append(group_B[:count_per_group_B + 1])
+                    group_B = group_B.drop(group_B.index[:count_per_group_B + 1])
+                    group_B.reset_index(inplace=True, drop=True)
+                else:
+                    extent_groups_B.append(group_B[:count_per_group_B])
+                    group_B = group_B.drop(group_B.index[:count_per_group_B])
+                    group_B.reset_index(inplace=True, drop=True)
 
         points = self.get_points(extent_groups_A, extent_groups_B)
 
@@ -59,11 +60,21 @@ class MF:
 
     def get_points(self, extent_groups_A, extent_groups_B):
         points = []
-        for group in extent_groups_A:
-            points.append(min(group))
+        if len(extent_groups_A) == 0:
+            points.append(-3)
+            points.append(-2)
+            points.append(-1)
+        else:
+            for group in extent_groups_A:
+                points.append(min(group))
         points.append(0)
-        for group in extent_groups_B:
-            points.append(max(group))
+        if len(extent_groups_B) == 0:
+            points.append(1)
+            points.append(2)
+            points.append(3)
+        else:
+            for group in extent_groups_B:
+                points.append(max(group))
         return points
 
     # values is a list of values

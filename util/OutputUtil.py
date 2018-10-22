@@ -13,7 +13,7 @@ class OutputUtil:
         df_result = pd.DataFrame()
 
         for i in range(len(indv_tuple_list)):
-            for j in range(CONSTANT.NUM_OF_POPULATION):
+            for j in range(CONSTANT.NUM_OF_RULES_PER_INDV):
                 data = {'number': [i],
                         'test_start': [indv_tuple_list[i][0]],
                         'test_end': [indv_tuple_list[i][1]],
