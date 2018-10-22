@@ -1,6 +1,6 @@
 import math
 import numpy as np
-import scipy.stats as stats
+# import scipy.stats as stats
 
 class MF:
     EXTENT_GROUPS = 7
