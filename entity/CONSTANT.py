@@ -17,6 +17,7 @@ MA_DEFAULT_COL = 'close'
 EXTENT_GROUPS = 7
 EXTENT = ['EL', 'VL', 'L', 'M', 'H', 'VH', 'EH']
 
+
 # three status
 STATUS_TRAIN = 'train'
 STATUS_SELECTION = 'selection'
